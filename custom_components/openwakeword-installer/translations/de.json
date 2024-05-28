@@ -1,0 +1,19 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "Konfiguration",
+                "data": {
+                    "repository_url": "Repository (inkl. Protokol)",
+                    "folder_path": "Unterordner im Repository (Beispiel: en)",
+                }
+            }
+        },
+        "error": {
+            "already_configured": "Repository is already configured"
+        },
+        "abort": {
+            "already_configured": "Repository is already configured"
+        }
+    }
+}
