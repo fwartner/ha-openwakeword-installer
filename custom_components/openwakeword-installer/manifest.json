@@ -9,6 +9,6 @@
     "iot_class": "cloud_polling",
     "requirements": ["gitpython"],
     "config_flow": true,
-    "single_config_entry": true,
+    "single_config_entry": false,
     "platforms": ["sensor"]
 }
