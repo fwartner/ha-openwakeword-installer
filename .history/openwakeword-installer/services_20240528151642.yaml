@@ -1,0 +1,3 @@
+update_wakewords:
+  description: "Update wake words manually"
+  fields: {}
