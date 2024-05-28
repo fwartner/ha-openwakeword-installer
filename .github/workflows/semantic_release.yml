@@ -18,10 +18,10 @@ on:
 
 jobs:
   lint:
-    uses: ./.github/workflows/lint.yml
+    uses: .github/workflows/lint.yml
 
   validate:
-    uses: ./.github/workflows/validate.yml
+    uses: .github/workflows/validate.yml
 
   semantic_release:
     #if: (github.event_name == 'pull_request' && github.event.action == 'closed') || github.ref == 'refs/heads/dev'
