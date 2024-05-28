@@ -3,11 +3,13 @@
     "name": "OpenWakeWord Installer",
     "version": "1.0.0",
     "documentation": "https://github.com/fwartner/ha-openwakeword-installer",
-    "requirements": ["gitpython"],
+    "issue_tracker": "https://github.com/fwartner/ha-openwakeword-installer/issues",
     "dependencies": [],
     "codeowners": ["@fwartner"],
     "iot_class": "cloud_polling",
     "integration_type": "hub",
+    "requirements": ["gitpython"],
     "config_flow": true,
+    "single_config_entry": true,
     "platforms": ["sensor"]
 }
