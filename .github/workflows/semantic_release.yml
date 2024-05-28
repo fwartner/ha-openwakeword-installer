@@ -17,12 +17,6 @@ on:
   #    - 'custom_components/**'
 
 jobs:
-  lint:
-    uses: .github/workflows/lint.yml
-
-  validate:
-    uses: .github/workflows/validate.yml
-
   semantic_release:
     #if: (github.event_name == 'pull_request' && github.event.action == 'closed') || github.ref == 'refs/heads/dev'
     name: "Semantic Release"
