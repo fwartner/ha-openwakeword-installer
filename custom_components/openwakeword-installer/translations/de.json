@@ -15,5 +15,16 @@
         "abort": {
             "already_configured": "Repository is already configured"
         }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "Konfiguration",
+                "data": {
+                    "repository_url": "Repository (inkl. Protokol)",
+                    "folder_path": "Unterordner im Repository (Beispiel: en)"
+                }
+            }
+        }
     }
 }
