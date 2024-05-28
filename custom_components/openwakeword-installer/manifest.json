@@ -1,5 +1,5 @@
 {
-    "domain": "openwakeword",
+    "domain": "openwakeword-installer",
     "name": "OpenWakeWord Installer",
     "version": "1.0.0",
     "documentation": "https://github.com/fwartner/ha-openwakeword-installer",
