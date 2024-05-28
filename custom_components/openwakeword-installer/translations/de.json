@@ -5,7 +5,7 @@
                 "title": "Konfiguration",
                 "data": {
                     "repository_url": "Repository (inkl. Protokol)",
-                    "folder_path": "Unterordner im Repository (Beispiel: en)",
+                    "folder_path": "Unterordner im Repository (Beispiel: en)"
                 }
             }
         },

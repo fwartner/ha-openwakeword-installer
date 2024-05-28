@@ -5,7 +5,7 @@
                 "title": "Configuration",
                 "data": {
                     "repository_url": "Repository (incl. Protocol)",
-                    "folder_path": "Subdirectory (Example: en)",
+                    "folder_path": "Subdirectory (Example: en)"
                 }
             }
         },
