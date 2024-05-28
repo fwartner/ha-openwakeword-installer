@@ -53,15 +53,17 @@ The **OpenWakeWord** integration for Home Assistant allows you to easily manage 
 
     ```plaintext
     custom_components/
-    └── openwakeword/
-        ├── __init__.py
-        ├── manifest.json
-        ├── config_flow.py
-        ├── const.py
-        ├── sensor.py
-        ├── services.yaml
-        ├── update.py
-        └── requirements.txt
+        └── openwakeword/
+            ├── __init__.py
+            ├── manifest.json
+            ├── config_flow.py
+            ├── const.py
+            ├── sensor.py
+            ├── services.yaml
+            ├── update.py
+            ├── requirements.txt
+            └── translations/
+                └── en.json
     ```
 
 2. **Install Dependencies**
