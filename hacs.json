@@ -1,3 +1,4 @@
 {
-    "name": "OpenWakeWord Installer"
+    "name": "OpenWakeWord Installer",
+    "render_readme": true
 }
