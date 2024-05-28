@@ -1,4 +1,4 @@
-DOMAIN = "openwakeword-installer"
+DOMAIN = "wakeword_installer"
 DEFAULT_SCAN_INTERVAL = 3600  # 1 hour
 
 CONF_REPOSITORY_URL = "repository_url"

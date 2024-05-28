@@ -2,8 +2,8 @@
     "config": {
         "step": {
             "user": {
-                "title": "Configure OpenWakeWord",
-                "description": "Set up the OpenWakeWord integration",
+                "title": "Configure WakeWord Installer",
+                "description": "Set up the WakeWord Installer integration",
                 "data": {
                     "repository_url": "Repository URL",
                     "folder_path": "Folder Path (optional)"
@@ -21,8 +21,8 @@
     "options": {
         "step": {
             "init": {
-                "title": "Configure OpenWakeWord Options",
-                "description": "Update the settings for OpenWakeWord",
+                "title": "Configure WakeWord Installer Options",
+                "description": "Update the settings for WakeWord Installer",
                 "data": {
                     "repository_url": "Repository URL",
                     "folder_path": "Folder Path (optional)"
@@ -32,12 +32,13 @@
     },
     "entity": {
         "sensor": {
-            "openwakeword_update_status": {
-                "name": "OpenWakeWord Update Status",
+            "wakeword_installer_update_status": {
+                "name": "WakeWord Installer Update Status",
                 "state": {
                     "idle": "Idle",
                     "checking": "Checking for updates",
-                    "updating": "Updating wake words"
+                    "updating": "Updating wake words",
+                    "error": "Error"
                 }
             }
         }

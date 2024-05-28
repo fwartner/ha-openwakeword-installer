@@ -1,6 +1,6 @@
+import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
-import voluptuous as vol
 
 from .const import DOMAIN
 
@@ -8,8 +8,8 @@ from .const import DOMAIN
 def configured_instances(hass):
     return [entry.data["repository_url"] for entry in hass.config_entries.async_entries(DOMAIN)]
 
-class OpenWakeWordConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for OpenWakeWord."""
+class WakeWordInstallerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
+    """Handle a config flow for WakeWord Installer."""
 
     VERSION = 1
 
@@ -22,7 +22,7 @@ class OpenWakeWordConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             else:
                 # Validate the URL
                 # Add your validation code here
-                return self.async_create_entry(title="OpenWakeWord", data=user_input)
+                return self.async_create_entry(title="WakeWord Installer", data=user_input)
 
         data_schema = vol.Schema({
             vol.Required("repository_url"): str,
