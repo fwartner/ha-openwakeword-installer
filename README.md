@@ -1,11 +1,12 @@
-# OpenWakeWord Integration for Home Assistant
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=fwartner&category=integration&repository=ha-openwakeword-installer)
-
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
 [![Validate](https://github.com/fwartner/ha-openwakeword-installer/actions/workflows/validate.yml/badge.svg)](https://github.com/fwartner/ha-openwakeword-installer/actions/workflows/validate.yml)
+![GitHub all releases](https://img.shields.io/github/downloads/fwartner/ha-openwakeword-installer/total)
+![GitHub](https://img.shields.io/github/license/fwartner/ha-openwakeword-installer)
+![GitHub issues by-label](https://img.shields.io/github/issues/fwartner/ha-openwakeword-installer/bug?color=red)
+![GitHub contributors](https://img.shields.io/github/contributors/fwartner/ha-openwakeword-installer)
 
-## Overview
-
-The **OpenWakeWord** integration for Home Assistant allows you to easily manage and update wake words for your smart home setup. This integration periodically checks a specified GitHub repository for new wake words and updates them automatically.
+# OpenWakeWord Installer Integration for Home Assistant
+The **OpenWakeWord Installer** integration for Home Assistant allows you to easily manage and update wake words for your smart home setup. This integration periodically checks a specified GitHub repository for new wake words and updates them automatically.
 
 ## Features
 
