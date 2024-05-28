@@ -2,29 +2,50 @@
     "config": {
         "step": {
             "user": {
-                "title": "Configuration",
+                "title": "Configure OpenWakeWord",
+                "description": "Set up the OpenWakeWord integration",
                 "data": {
-                    "repository_url": "Repository (incl. Protocol)",
-                    "folder_path": "Subdirectory (Example: en)"
+                    "repository_url": "Repository URL",
+                    "folder_path": "Folder Path (optional)"
                 }
             }
         },
         "error": {
-            "already_configured": "Repository is already configured"
+            "invalid_url": "Invalid URL",
+            "cannot_connect": "Failed to connect"
         },
         "abort": {
-            "already_configured": "Repository is already configured"
+            "already_configured": "The repository is already configured"
         }
     },
     "options": {
         "step": {
             "init": {
-                "title": "Konfiguration",
+                "title": "Configure OpenWakeWord Options",
+                "description": "Update the settings for OpenWakeWord",
                 "data": {
-                    "repository_url": "Repository (incl. Protocol)",
-                    "folder_path": "Subdirectory (Example: en)"
+                    "repository_url": "Repository URL",
+                    "folder_path": "Folder Path (optional)"
                 }
             }
+        }
+    },
+    "entity": {
+        "sensor": {
+            "openwakeword_update_status": {
+                "name": "OpenWakeWord Update Status",
+                "state": {
+                    "idle": "Idle",
+                    "checking": "Checking for updates",
+                    "updating": "Updating wake words"
+                }
+            }
+        }
+    },
+    "services": {
+        "update_wakewords": {
+            "name": "Update WakeWords",
+            "description": "Manually trigger an update of the wake words from the repository."
         }
     }
 }

@@ -10,5 +10,6 @@
     "requirements": ["gitpython"],
     "config_flow": true,
     "single_config_entry": false,
-    "platforms": ["sensor"]
+    "platforms": ["sensor"],
+    "translations": ["en"]
 }
