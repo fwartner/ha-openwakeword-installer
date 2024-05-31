@@ -1,7 +1,7 @@
 {
     "domain": "wakeword_installer",
     "name": "WakeWord Installer",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "documentation": "https://github.com/fwartner/ha-openwakeword-installer",
     "issue_tracker": "https://github.com/fwartner/ha-openwakeword-installer/issues",
     "dependencies": [],
