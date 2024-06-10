@@ -4,22 +4,15 @@ import shutil
 from datetime import timedelta
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.helpers.typing import HomeAssistantType
-import voluptuous as vol
-import homeassistant.helpers.config_validation as cv
+from homeassistant.components.sensor import async_setup_platform
 
 from .const import DOMAIN, CONF_REPOSITORY_URL, CONF_FOLDER_PATH, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
 from .update import update_repository
 
 _LOGGER = logging.getLogger(__name__)
-
-UPDATE_WAKEWORDS_SCHEMA = vol.Schema({
-    vol.Required(CONF_REPOSITORY_URL): cv.string,
-    vol.Optional(CONF_FOLDER_PATH, default=""): cv.string,
-    vol.Optional(CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL): cv.positive_int,
-})
 
 async def async_setup_entry(hass: HomeAssistantType, entry: ConfigEntry):
     """Set up WakeWord Installer from a config entry."""
@@ -30,17 +23,17 @@ async def async_setup_entry(hass: HomeAssistantType, entry: ConfigEntry):
     async def handle_update_wakewords_service(call):
         """Handle the service call to update wake words."""
         _LOGGER.info("Manual update of wake words triggered")
-        repo_url = call.data[CONF_REPOSITORY_URL]
-        folder_path = call.data.get(CONF_FOLDER_PATH, "")
+        repo_url = call.data.get(CONF_REPOSITORY_URL, repository_url)
+        folder_path = call.data.get(CONF_FOLDER_PATH, folder_path)
         await hass.async_add_executor_job(update_repository, repo_url, folder_path)
 
     hass.services.async_register(
-        DOMAIN, "update_wakewords", handle_update_wakewords_service, schema=UPDATE_WAKEWORDS_SCHEMA
+        DOMAIN, "update_wakewords", handle_update_wakewords_service
     )
 
     sensor = WakeWordInstallerSensor(repository_url, folder_path)
     hass.data.setdefault(DOMAIN, {}).setdefault(entry.entry_id, {})["sensor"] = sensor
-    async_add_entities([sensor], True)
+    async_setup_platform(hass, "sensor", [sensor], None, entry)
 
     async_track_time_interval(hass, sensor.async_update, scan_interval)
 
@@ -59,7 +52,7 @@ async def async_unload_entry(hass: HomeAssistantType, entry: ConfigEntry):
 
     return True
 
-class WakeWordInstallerSensor(SensorEntity):
+class WakeWordInstallerSensor(Entity):
     """Representation of a Sensor."""
 
     def __init__(self, repository_url, folder_path):
