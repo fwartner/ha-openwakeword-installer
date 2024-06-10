@@ -11,8 +11,9 @@
             }
         },
         "error": {
-            "invalid_url": "Invalid URL",
-            "cannot_connect": "Failed to connect"
+            "invalid_repository": "The provided URL is not a valid Git repository",
+            "cannot_connect": "Failed to connect to the repository",
+            "already_configured": "The repository is already configured"
         },
         "abort": {
             "already_configured": "The repository is already configured"
