@@ -2,36 +2,33 @@ import os
 import subprocess
 import tempfile
 import shutil
-from datetime import datetime
+import git
+import logging
 
-def check_for_updates(repo_url, folder_path):
+_LOGGER = logging.getLogger(__name__)
+
+def update_repository(repo_url, folder_path):
+    """Clone or update the repository and copy .tflite files to the target directory."""
     TARGET_DIR = "/share/openwakeword"
     os.makedirs(TARGET_DIR, exist_ok=True)
 
     temp_dir = tempfile.mkdtemp()
-    new_files = False
-    last_update = datetime.now().isoformat()
-
     try:
-        result = subprocess.run(
-            ['git', 'clone', '--depth', '1', '--filter=blob:none', '--sparse', repo_url, temp_dir],
-            check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        )
-        os.chdir(temp_dir)
+        repo = git.Repo.clone_from(repo_url, temp_dir, depth=1)
         if folder_path:
-            subprocess.run(['git', 'sparse-checkout', 'set', folder_path], check=True)
+            repo.git.sparse_checkout_set(folder_path)
         else:
-            subprocess.run(['git', 'sparse-checkout', 'set', '*'], check=True)
+            repo.git.sparse_checkout_set("*")
 
-        for root, _, files in os.walk(temp_dir):
-            for file in files:
-                if file.endswith('.tflite'):
-                    src_file = os.path.join(root, file)
-                    dest_file = os.path.join(TARGET_DIR, file)
-                    if not os.path.exists(dest_file) or not filecmp.cmp(src_file, dest_file, shallow=False):
-                        shutil.copy2(src_file, TARGET_DIR)
-                        new_files = True
+        files = [f for f in repo.tree().traverse() if f.path.endswith(".tflite")]
+        for file in files:
+            src_file = os.path.join(temp_dir, file.path)
+            dest_file = os.path.join(TARGET_DIR, os.path.basename(file.path))
+            shutil.copy2(src_file, dest_file)
+
+    except git.exc.GitError as e:
+        _LOGGER.error(f"Git error: {e}")
+    except Exception as e:
+        _LOGGER.error(f"Error updating wake words: {e}")
     finally:
         shutil.rmtree(temp_dir)
-
-    return new_files, last_update
