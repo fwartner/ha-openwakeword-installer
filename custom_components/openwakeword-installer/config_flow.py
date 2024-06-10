@@ -1,8 +1,7 @@
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
-import git
-from .const import DOMAIN, CONF_REPOSITORY_URL, CONF_FOLDER_PATH
+from .const import DOMAIN, CONF_REPOSITORY_URL, CONF_FOLDER_PATH, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
 
 @callback
 def configured_instances(hass):
@@ -29,6 +28,7 @@ class WakeWordInstallerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         data_schema = vol.Schema({
             vol.Required(CONF_REPOSITORY_URL): str,
             vol.Optional(CONF_FOLDER_PATH, default=""): str,
+            vol.Optional(CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL): int,
         })
 
         return self.async_show_form(
@@ -53,3 +53,16 @@ class WakeWordInstallerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_import(self, user_input=None):
         """Handle the import from configuration.yaml."""
         return await self.async_step_user(user_input)
+
+    async def async_step_init(self, user_input=None):
+        """Manage the options."""
+        if user_input is not None:
+            return self.async_create_entry(title="", data=user_input)
+
+        options_schema = vol.Schema({
+            vol.Required(CONF_REPOSITORY_URL, default=self.config_entry.options.get(CONF_REPOSITORY_URL, "")): str,
+            vol.Optional(CONF_FOLDER_PATH, default=self.config_entry.options.get(CONF_FOLDER_PATH, "")): str,
+            vol.Optional(CONF_SCAN_INTERVAL, default=self.config_entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)): int,
+        })
+
+        return self.async_show_form(step_id="init", data_schema=options_schema)

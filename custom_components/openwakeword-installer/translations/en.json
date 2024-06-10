@@ -6,7 +6,8 @@
                 "description": "Set up the WakeWord Installer integration",
                 "data": {
                     "repository_url": "Repository URL",
-                    "folder_path": "Folder Path (optional)"
+                    "folder_path": "Folder Path (optional)",
+                    "scan_interval": "Scan Interval (seconds)"
                 }
             }
         },
@@ -26,7 +27,8 @@
                 "description": "Update the settings for WakeWord Installer",
                 "data": {
                     "repository_url": "Repository URL",
-                    "folder_path": "Folder Path (optional)"
+                    "folder_path": "Folder Path (optional)",
+                    "scan_interval": "Scan Interval (seconds)"
                 }
             }
         }
