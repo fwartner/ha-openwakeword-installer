@@ -11,5 +11,6 @@
     "config_flow": true,
     "single_config_entry": false,
     "platforms": ["sensor"],
-    "translations": ["en"]
+    "translations": ["en"],
+    "icon": "mdi:github"
 }

@@ -1,7 +1,6 @@
 import os
-import subprocess
-import tempfile
 import shutil
+import tempfile
 import git
 import logging
 

@@ -2,6 +2,7 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
 from .const import DOMAIN, CONF_REPOSITORY_URL, CONF_FOLDER_PATH, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
+import git
 
 @callback
 def configured_instances(hass):
@@ -45,9 +46,9 @@ class WakeWordInstallerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             import shutil
             shutil.rmtree('/tmp/temp_repo')
             return True, None
-        except git.exc.GitError as e:
+        except git.exc.GitError:
             return False, "invalid_repository"
-        except Exception as e:
+        except Exception:
             return False, "cannot_connect"
 
     async def async_step_import(self, user_input=None):

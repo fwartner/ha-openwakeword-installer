@@ -1,9 +1,10 @@
 import logging
+from datetime import timedelta
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.typing import HomeAssistantType
 from homeassistant.helpers.event import async_track_time_interval
-from datetime import timedelta
+from homeassistant.helpers.typing import HomeAssistantType
 
 from .const import DOMAIN, CONF_REPOSITORY_URL, CONF_FOLDER_PATH, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
 from .update import update_repository
@@ -26,6 +27,7 @@ async def async_setup_entry(hass: HomeAssistantType, entry: ConfigEntry):
     )
 
     sensor = WakeWordInstallerSensor(repository_url, folder_path)
+    hass.data.setdefault(DOMAIN, {}).setdefault(entry.entry_id, {})["sensor"] = sensor
     async_add_entities([sensor], True)
 
     async_track_time_interval(hass, sensor.async_update, scan_interval)
