@@ -55,15 +55,29 @@ class WakeWordInstallerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle the import from configuration.yaml."""
         return await self.async_step_user(user_input)
 
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry):
+        """Get the options flow for this handler."""
+        return WakeWordInstallerOptionsFlowHandler(config_entry)
+
+class WakeWordInstallerOptionsFlowHandler(config_entries.OptionsFlow):
+    """Handle an options flow for WakeWord Installer."""
+
+    def __init__(self, config_entry):
+        """Initialize options flow."""
+        self.config_entry = config_entry
+
     async def async_step_init(self, user_input=None):
         """Manage the options."""
         if user_input is not None:
+            self.hass.config_entries.async_update_entry(self.config_entry, data=user_input)
             return self.async_create_entry(title="", data=user_input)
 
         options_schema = vol.Schema({
-            vol.Required(CONF_REPOSITORY_URL, default=self.config_entry.options.get(CONF_REPOSITORY_URL, "")): str,
-            vol.Optional(CONF_FOLDER_PATH, default=self.config_entry.options.get(CONF_FOLDER_PATH, "")): str,
-            vol.Optional(CONF_SCAN_INTERVAL, default=self.config_entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)): int,
+            vol.Required(CONF_REPOSITORY_URL, default=self.config_entry.data.get(CONF_REPOSITORY_URL, "")): str,
+            vol.Optional(CONF_FOLDER_PATH, default=self.config_entry.data.get(CONF_FOLDER_PATH, "")): str,
+            vol.Optional(CONF_SCAN_INTERVAL, default=self.config_entry.data.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)): int,
         })
 
         return self.async_show_form(step_id="init", data_schema=options_schema)
