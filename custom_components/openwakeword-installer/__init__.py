@@ -1,15 +1,25 @@
 import logging
+import os
+import shutil
 from datetime import timedelta
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.helpers.typing import HomeAssistantType
+import voluptuous as vol
+import homeassistant.helpers.config_validation as cv
 
 from .const import DOMAIN, CONF_REPOSITORY_URL, CONF_FOLDER_PATH, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
 from .update import update_repository
 
 _LOGGER = logging.getLogger(__name__)
+
+UPDATE_WAKEWORDS_SCHEMA = vol.Schema({
+    vol.Required(CONF_REPOSITORY_URL): cv.string,
+    vol.Optional(CONF_FOLDER_PATH, default=""): cv.string,
+    vol.Optional(CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL): cv.positive_int,
+})
 
 async def async_setup_entry(hass: HomeAssistantType, entry: ConfigEntry):
     """Set up WakeWord Installer from a config entry."""
@@ -20,10 +30,12 @@ async def async_setup_entry(hass: HomeAssistantType, entry: ConfigEntry):
     async def handle_update_wakewords_service(call):
         """Handle the service call to update wake words."""
         _LOGGER.info("Manual update of wake words triggered")
-        await hass.async_add_executor_job(update_repository, repository_url, folder_path)
+        repo_url = call.data[CONF_REPOSITORY_URL]
+        folder_path = call.data.get(CONF_FOLDER_PATH, "")
+        await hass.async_add_executor_job(update_repository, repo_url, folder_path)
 
     hass.services.async_register(
-        DOMAIN, "update_wakewords", handle_update_wakewords_service
+        DOMAIN, "update_wakewords", handle_update_wakewords_service, schema=UPDATE_WAKEWORDS_SCHEMA
     )
 
     sensor = WakeWordInstallerSensor(repository_url, folder_path)
@@ -38,6 +50,13 @@ async def async_unload_entry(hass: HomeAssistantType, entry: ConfigEntry):
     """Unload WakeWord Installer config entry."""
     hass.services.async_remove(DOMAIN, "update_wakewords")
     await hass.config_entries.async_forward_entry_unload(entry, "sensor")
+
+    # Remove all wake words
+    target_dir = "/share/openwakeword"
+    if os.path.exists(target_dir):
+        shutil.rmtree(target_dir)
+        _LOGGER.info(f"Removed all wake words from {target_dir}")
+
     return True
 
 class WakeWordInstallerSensor(SensorEntity):

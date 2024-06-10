@@ -1,3 +1,14 @@
 update_wakewords:
-  description: "Update wake words manually"
-  fields: {}
+  description: "Manually trigger an update of the wake words from the repository."
+  fields:
+    repository_url:
+      description: "The URL of the repository to update wake words from."
+      example: "https://github.com/your-repo"
+    folder_path:
+      description: "The folder path in the repository to update wake words from."
+      example: "wakewords"
+      required: false
+    scan_interval:
+      description: "The interval in seconds to check for updates."
+      example: 3600
+      required: false
