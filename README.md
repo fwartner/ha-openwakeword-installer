@@ -5,6 +5,8 @@
 ![GitHub issues by-label](https://img.shields.io/github/issues/fwartner/ha-openwakeword-installer/bug?color=red)
 ![GitHub contributors](https://img.shields.io/github/contributors/fwartner/ha-openwakeword-installer)
 
+# NOT WORKING ATM. Working on Fix.
+
 # OpenWakeWord Installer Integration for Home Assistant
 The **OpenWakeWord Installer** integration for Home Assistant allows you to easily manage and update wake words for your smart home setup. This integration periodically checks a specified GitHub repository for new wake words and updates them automatically.
 
