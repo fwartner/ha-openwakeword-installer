@@ -4,17 +4,15 @@ import shutil
 from datetime import timedelta
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.event import async_track_time_interval
-from homeassistant.helpers.typing import HomeAssistantType
-from homeassistant.components.sensor import async_setup_platform
 
 from .const import DOMAIN, CONF_REPOSITORY_URL, CONF_FOLDER_PATH, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
 from .update import update_repository
 
 _LOGGER = logging.getLogger(__name__)
 
-async def async_setup_entry(hass: HomeAssistantType, entry: ConfigEntry):
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up WakeWord Installer from a config entry."""
     repository_url = entry.data[CONF_REPOSITORY_URL]
     folder_path = entry.data.get(CONF_FOLDER_PATH, "")
@@ -33,13 +31,13 @@ async def async_setup_entry(hass: HomeAssistantType, entry: ConfigEntry):
 
     sensor = WakeWordInstallerSensor(repository_url, folder_path)
     hass.data.setdefault(DOMAIN, {}).setdefault(entry.entry_id, {})["sensor"] = sensor
-    async_setup_platform(hass, "sensor", [sensor], None, entry)
+    hass.helpers.entity_platform.async_add_entities([sensor], True)
 
     async_track_time_interval(hass, sensor.async_update, scan_interval)
 
     return True
 
-async def async_unload_entry(hass: HomeAssistantType, entry: ConfigEntry):
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Unload WakeWord Installer config entry."""
     hass.services.async_remove(DOMAIN, "update_wakewords")
     await hass.config_entries.async_forward_entry_unload(entry, "sensor")
