@@ -4,9 +4,10 @@ update_wakewords:
     repository_url:
       description: "The URL of the repository to update wake words from."
       example: "https://github.com/fwartner/home-assistant-wakewords-collection"
-    folder_path:
-      description: "The folder path in the repository to update wake words from."
-      example: "wakewords"
+      required: true
+    folder:
+      description: "The folder within the repository containing the wakewords (optional)."
+      example: "en"
       required: false
     scan_interval:
       description: "The interval in seconds to check for updates."
