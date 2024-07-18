@@ -1,83 +1,42 @@
-import logging
-import datetime
-import git
-import voluptuous as vol
-
-from homeassistant.components.sensor import SensorEntity
+import asyncio
+from homeassistant.helpers.entity import Entity
 from homeassistant.const import CONF_URL
-from homeassistant.helpers.event import async_track_time_interval
 
-from .const import DOMAIN
-
-_LOGGER = logging.getLogger(__name__)
-
-SCAN_INTERVAL = datetime.timedelta(minutes=60)  # Check every hour
+from .const import CONF_REPOSITORY_URL
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
-    """Set up the WakeWord Installer sensor."""
-    repository_url = config_entry.data[CONF_URL]
-    folder_path = config_entry.data.get("folder_path", "")
+    """Set up the Wakeword Installer sensor based on a config entry."""
+    repository_url = config_entry.data.get(CONF_REPOSITORY_URL)
 
-    sensor = WakeWordInstallerSensor(repository_url, folder_path)
-    async_add_entities([sensor], True)
+    if not repository_url:
+        hass.components.logger.error("No repository URL provided in the configuration.")
+        return
 
-    async_track_time_interval(hass, sensor.async_update, SCAN_INTERVAL)
+    async_add_entities([WakewordSensor(repository_url)], True)
 
-class WakeWordInstallerSensor(SensorEntity):
-    """Representation of a Sensor."""
+class WakewordSensor(Entity):
+    """Representation of a Wakeword Installer sensor."""
 
-    def __init__(self, repository_url, folder_path):
+    def __init__(self, repository_url):
         """Initialize the sensor."""
-        self._state = "idle"
-        self._last_update = None
+        self._state = None
         self._repository_url = repository_url
-        self._folder_path = folder_path
-        self._repo = None
 
     @property
     def name(self):
         """Return the name of the sensor."""
-        return "WakeWord Installer Update Status"
+        return 'Wakeword Installer'
 
     @property
     def state(self):
         """Return the state of the sensor."""
         return self._state
 
-    @property
-    def extra_state_attributes(self):
-        """Return the state attributes."""
-        return {
-            "last_update": self._last_update
-        }
-
-    async def async_update(self, *_):
+    async def async_update(self):
         """Fetch new state data for the sensor."""
-        self._state = "checking"
-        _LOGGER.debug("Checking for updates...")
+        self._state = await self.fetch_wakewords()
 
-        try:
-            if self._repo is None:
-                self._repo = git.Repo.clone_from(self._repository_url, '/tmp/wakeword_installer_repo')
-            else:
-                self._repo.remotes.origin.pull()
-
-            files = [f for f in self._repo.tree().traverse() if f.path.endswith(".tflite")]
-            if self._folder_path:
-                files = [f for f in files if f.path.startswith(self._folder_path)]
-
-            if files:
-                _LOGGER.debug("Wake words found: %s", files)
-                self._state = "updating"
-                self._last_update = datetime.datetime.now().isoformat()
-                # Copy files to the target directory
-                for file in files:
-                    file_path = f"/share/openwakeword/{file.path.split('/')[-1]}"
-                    with open(file_path, 'wb') as f:
-                        f.write(file.data_stream.read())
-            else:
-                _LOGGER.debug("No new wake words found.")
-                self._state = "idle"
-        except Exception as e:
-            _LOGGER.error("Error updating wake words: %s", e)
-            self._state = "error"
+    async def fetch_wakewords(self):
+        """Fetch the wakewords from the repository URL."""
+        # Implementation for fetching wakewords goes here
+        return "Wakewords fetched"

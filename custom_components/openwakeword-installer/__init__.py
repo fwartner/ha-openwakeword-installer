@@ -1,110 +1,46 @@
-import logging
 import os
-import shutil
-from datetime import timedelta
+import logging
 
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.typing import ConfigType
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers.event import async_track_time_interval
 
-from .const import DOMAIN, CONF_REPOSITORY_URL, CONF_FOLDER_PATH, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
-from .update import update_repository
+from .const import DOMAIN, CONF_REPOSITORY_URL
+from .update import update_wakewords
 
 _LOGGER = logging.getLogger(__name__)
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
-    """Set up WakeWord Installer from a config entry."""
-    repository_url = entry.data[CONF_REPOSITORY_URL]
-    folder_path = entry.data.get(CONF_FOLDER_PATH, "")
-    scan_interval = timedelta(seconds=entry.data.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL))
+async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
+    """Set up the Wakeword Installer component."""
 
-    async def handle_update_wakewords_service(call):
-        """Handle the service call to update wake words."""
-        _LOGGER.info("Manual update of wake words triggered")
-        repo_url = call.data.get(CONF_REPOSITORY_URL, repository_url)
-        folder_path = call.data.get(CONF_FOLDER_PATH, folder_path)
-        await hass.async_add_executor_job(update_repository, repo_url, folder_path)
+    # Ensure directories are created
+    await hass.async_add_executor_job(create_directory, '/share/openwakeword')
 
-    hass.services.async_register(
-        DOMAIN, "update_wakewords", handle_update_wakewords_service
+    # Register services
+    async def handle_update_wakewords(call):
+        repository_url = call.data.get(CONF_REPOSITORY_URL)
+        if repository_url:
+            await hass.async_add_executor_job(update_wakewords, repository_url)
+        else:
+            _LOGGER.error("No repository URL provided for wakeword update.")
+
+    hass.services.async_register(DOMAIN, 'update_wakewords', handle_update_wakewords)
+
+    return True
+
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Set up Wakeword Installer from a config entry."""
+    hass.async_add_job(
+        hass.config_entries.async_forward_entry_setup, entry, "sensor"
     )
-
-    sensor = WakeWordInstallerSensor(repository_url, folder_path)
-    hass.data.setdefault(DOMAIN, {}).setdefault(entry.entry_id, {})["sensor"] = sensor
-    hass.helpers.entity_platform.async_add_entities([sensor], True)
-
-    async_track_time_interval(hass, sensor.async_update, scan_interval)
-
     return True
 
-async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
-    """Unload WakeWord Installer config entry."""
-    hass.services.async_remove(DOMAIN, "update_wakewords")
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Unload a config entry."""
     await hass.config_entries.async_forward_entry_unload(entry, "sensor")
-
-    # Remove all wake words
-    target_dir = "/share/openwakeword"
-    if os.path.exists(target_dir):
-        shutil.rmtree(target_dir)
-        _LOGGER.info(f"Removed all wake words from {target_dir}")
-
     return True
 
-class WakeWordInstallerSensor(Entity):
-    """Representation of a Sensor."""
-
-    def __init__(self, repository_url, folder_path):
-        """Initialize the sensor."""
-        self._state = "idle"
-        self._last_update = None
-        self._repository_url = repository_url
-        self._folder_path = folder_path
-        self._repo = None
-
-    @property
-    def name(self):
-        """Return the name of the sensor."""
-        return "WakeWord Installer Update Status"
-
-    @property
-    def state(self):
-        """Return the state of the sensor."""
-        return self._state
-
-    @property
-    def extra_state_attributes(self):
-        """Return the state attributes."""
-        return {
-            "last_update": self._last_update
-        }
-
-    async def async_update(self, *_):
-        """Fetch new state data for the sensor."""
-        self._state = "checking"
-        _LOGGER.debug("Checking for updates...")
-
-        try:
-            if self._repo is None:
-                self._repo = git.Repo.clone_from(self._repository_url, '/tmp/wakeword_installer_repo')
-            else:
-                self._repo.remotes.origin.pull()
-
-            files = [f for f in self._repo.tree().traverse() if f.path.endswith(".tflite")]
-            if self._folder_path:
-                files = [f for f in files if f.path.startswith(self._folder_path)]
-
-            if files:
-                _LOGGER.debug("Wake words found: %s", files)
-                self._state = "updating"
-                self._last_update = datetime.datetime.now().isoformat()
-                # Copy files to the target directory
-                for file in files:
-                    file_path = f"/share/openwakeword/{file.path.split('/')[-1]}"
-                    with open(file_path, 'wb') as f:
-                        f.write(file.data_stream.read())
-            else:
-                _LOGGER.debug("No new wake words found.")
-                self._state = "idle"
-        except Exception as e:
-            _LOGGER.error("Error updating wake words: %s", e)
-            self._state = "error"
+def create_directory(path: str):
+    """Create directory if it does not exist."""
+    if not os.path.exists(path):
+        os.makedirs(path)
