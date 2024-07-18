@@ -5,7 +5,7 @@ from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.helpers.typing import ConfigType
 from homeassistant.config_entries import ConfigEntry
 
-from .const import DOMAIN, CONF_REPOSITORY_URL
+from .const import DOMAIN, CONF_REPOSITORY_URL, CONF_FOLDER
 from .update import update_wakewords
 
 _LOGGER = logging.getLogger(__name__)
@@ -19,13 +19,15 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     # Register services
     async def handle_update_wakewords(call: ServiceCall):
         repository_url = call.data.get(CONF_REPOSITORY_URL)
+        folder = call.data.get(CONF_FOLDER, '')
         if repository_url:
-            _LOGGER.info(f"Updating wakewords from repository: {repository_url}")
-            await hass.async_add_executor_job(update_wakewords, repository_url)
+            _LOGGER.info(f"Updating wakewords from repository: {repository_url} with folder: {folder}")
+            await hass.async_add_executor_job(update_wakewords, repository_url, folder)
         else:
             _LOGGER.error("No repository URL provided for wakeword update.")
 
     hass.services.async_register(DOMAIN, 'update_wakewords', handle_update_wakewords)
+    _LOGGER.info("Wakeword Installer service registered")
 
     return True
 
