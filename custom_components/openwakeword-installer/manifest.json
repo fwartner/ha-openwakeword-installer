@@ -12,5 +12,5 @@
     "single_config_entry": false,
     "platforms": ["sensor"],
     "translations": ["en"],
-    "icon": "mdi:github"
+    "icon": "https://wartner.io/content/images/size/w600/2022/09/FW_Slant-1.png"
 }
