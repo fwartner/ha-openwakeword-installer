@@ -1,7 +1,7 @@
 import os
 import logging
 
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.helpers.typing import ConfigType
 from homeassistant.config_entries import ConfigEntry
 
@@ -17,9 +17,10 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     await hass.async_add_executor_job(create_directory, '/share/openwakeword')
 
     # Register services
-    async def handle_update_wakewords(call):
+    async def handle_update_wakewords(call: ServiceCall):
         repository_url = call.data.get(CONF_REPOSITORY_URL)
         if repository_url:
+            _LOGGER.info(f"Updating wakewords from repository: {repository_url}")
             await hass.async_add_executor_job(update_wakewords, repository_url)
         else:
             _LOGGER.error("No repository URL provided for wakeword update.")
