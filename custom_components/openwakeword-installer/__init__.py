@@ -30,8 +30,8 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Wakeword Installer from a config entry."""
-    hass.async_add_job(
-        hass.config_entries.async_forward_entry_setup, entry, "sensor"
+    hass.async_create_task(
+        hass.config_entries.async_forward_entry_setup(entry, "sensor")
     )
     return True
 
