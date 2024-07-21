@@ -1,8 +1,8 @@
-name: "Lint"
+name: "RELEASE CHANGELOGS"
 
 on:
   release:
-    types: [created]
+    types: [published]
 
 jobs:
   release:
