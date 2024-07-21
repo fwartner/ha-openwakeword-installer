@@ -26,7 +26,7 @@ class WakewordInstallerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         data_schema = vol.Schema({
             vol.Required(CONF_REPOSITORY_URL): str,
-            vol.Optional(CONF_FOLDER): str,
+            vol.Optional(CONF_FOLDER, description="Optional folder within the repository containing the wakewords"): str,
         })
 
         return self.async_show_form(
@@ -47,11 +47,21 @@ class WakewordInstallerOptionsFlowHandler(config_entries.OptionsFlow):
     async def async_step_init(self, user_input=None):
         """Manage the options."""
         if user_input is not None:
+            # Trigger the update service if requested
+            if user_input.get("update_wakewords"):
+                self.hass.async_create_task(
+                    self.hass.services.async_call(
+                        DOMAIN, "update_wakewords",
+                        {CONF_REPOSITORY_URL: user_input[CONF_REPOSITORY_URL],
+                         CONF_FOLDER: user_input.get(CONF_FOLDER, '')}
+                    )
+                )
             return self.async_create_entry(title="", data=user_input)
 
         data_schema = vol.Schema({
             vol.Optional(CONF_REPOSITORY_URL, default=self.config_entry.options.get(CONF_REPOSITORY_URL, self.config_entry.data.get(CONF_REPOSITORY_URL, ''))): str,
-            vol.Optional(CONF_FOLDER, default=self.config_entry.options.get(CONF_FOLDER, self.config_entry.data.get(CONF_FOLDER, ''))): str,
+            vol.Optional(CONF_FOLDER, default=self.config_entry.options.get(CONF_FOLDER, self.config_entry.data.get(CONF_FOLDER, '')), description="Optional folder within the repository containing the wakewords"): str,
+            vol.Optional("update_wakewords", default=False): bool,
         })
 
         return self.async_show_form(step_id="init", data_schema=data_schema)

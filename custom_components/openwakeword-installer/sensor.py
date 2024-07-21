@@ -1,6 +1,5 @@
 import asyncio
 from homeassistant.helpers.entity import Entity
-from homeassistant.const import CONF_URL
 
 from .const import CONF_REPOSITORY_URL, CONF_FOLDER
 
