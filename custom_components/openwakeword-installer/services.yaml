@@ -7,17 +7,17 @@ update_wakewords:
       required: true
       selector:
         text:
-    folder:
+    folder_path:
       description: "The folder within the repository containing the wakewords (optional)."
       example: "en"
       required: false
       selector:
         text:
-    update_interval:
-      description: "Enter the update interval in hours."
-      example: 24
+    scan_interval:
+      description: "Enter the scan interval in seconds."
+      example: 3600
       required: false
       selector:
         number:
           min: 1
-          max: 168
+          max: 86400

@@ -4,9 +4,9 @@ import logging
 import datetime
 import homeassistant.util.dt as dt_util
 
-from homeassistant.core import HomeAssistant
-from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.helpers.typing import ConfigType
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.event import async_track_time_interval
 
 from .const import DOMAIN, CONF_REPOSITORY_URL, CONF_FOLDER_PATH, CONF_SCAN_INTERVAL
@@ -17,6 +17,17 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """Set up the Wakeword Installer component."""
     await hass.async_add_executor_job(create_directory, '/share/openwakeword')
+
+    # Register the service
+    async def handle_update_wakewords_service(call: ServiceCall):
+        repository_url = call.data.get(CONF_REPOSITORY_URL)
+        folder_path = call.data.get(CONF_FOLDER_PATH, '')
+        scan_interval = call.data.get(CONF_SCAN_INTERVAL, 3600)
+        await hass.async_add_executor_job(update_wakewords, repository_url, folder_path)
+        _LOGGER.info(f"Wakewords updated from {repository_url} (folder: {folder_path})")
+
+    hass.services.async_register(DOMAIN, "update_wakewords", handle_update_wakewords_service)
+
     return True
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
