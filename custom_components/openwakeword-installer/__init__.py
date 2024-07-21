@@ -13,8 +13,11 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """Set up the Wakeword Installer component."""
 
+    # Change the directory to a path within the Home Assistant configuration directory
+    directory_path = hass.config.path("wakeword_installer")
+
     # Ensure directories are created
-    await hass.async_add_executor_job(create_directory, '/share/openwakeword')
+    await hass.async_add_executor_job(create_directory, directory_path)
 
     # Register services
     async def handle_update_wakewords(call: ServiceCall):
@@ -22,7 +25,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
         folder = call.data.get(CONF_FOLDER, '')
         if repository_url:
             _LOGGER.info(f"Updating wakewords from repository: {repository_url} with folder: {folder}")
-            await hass.async_add_executor_job(update_wakewords, repository_url, folder)
+            await hass.async_add_executor_job(update_wakewords, repository_url, folder, directory_path)
         else:
             _LOGGER.error("No repository URL provided for wakeword update.")
 
