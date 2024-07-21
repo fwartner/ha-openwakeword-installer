@@ -1,15 +1,15 @@
 update_wakewords:
-  description: "Manually trigger an update of the wake words from the repository."
+  description: "Update the wakewords from the repository."
   fields:
     repository_url:
-      description: "The URL of the repository to update wake words from."
+      description: "The URL of the repository containing wakewords."
       example: "https://github.com/fwartner/home-assistant-wakewords-collection"
       required: true
+      selector:
+        text:
     folder:
       description: "The folder within the repository containing the wakewords (optional)."
       example: "en"
       required: false
-    scan_interval:
-      description: "The interval in seconds to check for updates."
-      example: 3600
-      required: false
+      selector:
+        text:
