@@ -1,32 +1,33 @@
-import asyncio
+import logging
 from homeassistant.helpers.entity import Entity
 
-from .const import CONF_REPOSITORY_URL, CONF_FOLDER
+from .const import DOMAIN, CONF_REPOSITORY_URL, CONF_FOLDER_PATH, CONF_SCAN_INTERVAL
 
-async def async_setup_entry(hass, config_entry, async_add_entities):
-    """Set up the Wakeword Installer sensor based on a config entry."""
-    repository_url = config_entry.data.get(CONF_REPOSITORY_URL)
-    folder = config_entry.data.get(CONF_FOLDER, '')
+_LOGGER = logging.getLogger(__name__)
 
-    if not repository_url:
-        hass.components.logger.error("No repository URL provided in the configuration.")
-        return
+async def async_setup_entry(hass, entry, async_add_entities):
+    """Set up the Wakeword Installer sensor."""
+    repository_url = entry.data.get(CONF_REPOSITORY_URL)
+    folder_path = entry.data.get(CONF_FOLDER_PATH)
+    scan_interval = entry.data.get(CONF_SCAN_INTERVAL)
 
-    async_add_entities([WakewordSensor(repository_url, folder)], True)
+    async_add_entities([WakewordUpdateStatusSensor(repository_url, folder_path, scan_interval)], True)
 
-class WakewordSensor(Entity):
-    """Representation of a Wakeword Installer sensor."""
+class WakewordUpdateStatusSensor(Entity):
+    """Representation of a Wakeword Update Status sensor."""
 
-    def __init__(self, repository_url, folder):
+    def __init__(self, repository_url, folder_path, scan_interval):
         """Initialize the sensor."""
         self._state = None
         self._repository_url = repository_url
-        self._folder = folder
+        self._folder_path = folder_path
+        self._scan_interval = scan_interval
+        self._name = "Wakeword Installer Update Status"
 
     @property
     def name(self):
         """Return the name of the sensor."""
-        return 'Wakeword Installer'
+        return self._name
 
     @property
     def state(self):
@@ -35,12 +36,5 @@ class WakewordSensor(Entity):
 
     async def async_update(self):
         """Fetch new state data for the sensor."""
-        self._state = await self.fetch_wakewords()
-
-    async def fetch_wakewords(self):
-        """Fetch the wakewords from the repository URL."""
-        # Implementation for fetching wakewords goes here
-        if self._folder:
-            return f"Wakewords fetched from {self._repository_url}/{self._folder}"
-        else:
-            return f"Wakewords fetched from {self._repository_url}"
+        # Here you would implement the logic to check for updates
+        self._state = "idle"
