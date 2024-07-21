@@ -1,0 +1,56 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "WakeWord Installer configureren",
+                "description": "Stel de WakeWord Installer-integratie in",
+                "data": {
+                    "repository_url": "Repository-URL",
+                    "folder_path": "Map pad (optioneel)",
+                    "scan_interval": "Scan-interval (seconden)"
+                }
+            }
+        },
+        "error": {
+            "invalid_repository": "De opgegeven URL is geen geldige Git-repository",
+            "cannot_connect": "Kan geen verbinding maken met de repository",
+            "already_configured": "De repository is al geconfigureerd"
+        },
+        "abort": {
+            "already_configured": "De repository is al geconfigureerd"
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "WakeWord Installer-opties configureren",
+                "description": "Werk de instellingen voor WakeWord Installer bij",
+                "data": {
+                    "repository_url": "Repository-URL",
+                    "folder_path": "Map pad (optioneel)",
+                    "scan_interval": "Scan-interval (seconden)",
+                    "update_wakewords": "Update Wakewords nu"
+                }
+            }
+        }
+    },
+    "entity": {
+        "sensor": {
+            "wakeword_installer_update_status": {
+                "name": "WakeWord Installer update status",
+                "state": {
+                    "idle": "Inactief",
+                    "checking": "Controleren op updates",
+                    "updating": "Wakewords bijwerken",
+                    "error": "Fout"
+                }
+            }
+        }
+    },
+    "services": {
+        "update_wakewords": {
+            "name": "Update WakeWords",
+            "description": "Handmatig een update van de wake words uit de repository activeren."
+        }
+    }
+}

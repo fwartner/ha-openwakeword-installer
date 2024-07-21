@@ -1,0 +1,56 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "Configurar WakeWord Installer",
+                "description": "Configura la integración de WakeWord Installer",
+                "data": {
+                    "repository_url": "URL del repositorio",
+                    "folder_path": "Ruta de la carpeta (opcional)",
+                    "scan_interval": "Intervalo de escaneo (segundos)"
+                }
+            }
+        },
+        "error": {
+            "invalid_repository": "La URL proporcionada no es un repositorio Git válido",
+            "cannot_connect": "No se pudo conectar al repositorio",
+            "already_configured": "El repositorio ya está configurado"
+        },
+        "abort": {
+            "already_configured": "El repositorio ya está configurado"
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "Configurar opciones de WakeWord Installer",
+                "description": "Actualiza la configuración de WakeWord Installer",
+                "data": {
+                    "repository_url": "URL del repositorio",
+                    "folder_path": "Ruta de la carpeta (opcional)",
+                    "scan_interval": "Intervalo de escaneo (segundos)",
+                    "update_wakewords": "Actualizar Wakewords ahora"
+                }
+            }
+        }
+    },
+    "entity": {
+        "sensor": {
+            "wakeword_installer_update_status": {
+                "name": "Estado de actualización de WakeWord Installer",
+                "state": {
+                    "idle": "Inactivo",
+                    "checking": "Verificando actualizaciones",
+                    "updating": "Actualizando wake words",
+                    "error": "Error"
+                }
+            }
+        }
+    },
+    "services": {
+        "update_wakewords": {
+            "name": "Actualizar WakeWords",
+            "description": "Activar manualmente una actualización de los wake words desde el repositorio."
+        }
+    }
+}

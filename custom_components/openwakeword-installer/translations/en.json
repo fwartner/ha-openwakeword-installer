@@ -28,7 +28,8 @@
                 "data": {
                     "repository_url": "Repository URL",
                     "folder_path": "Folder Path (optional)",
-                    "scan_interval": "Scan Interval (seconds)"
+                    "scan_interval": "Scan Interval (seconds)",
+                    "update_wakewords": "Update Wakewords Now"
                 }
             }
         }

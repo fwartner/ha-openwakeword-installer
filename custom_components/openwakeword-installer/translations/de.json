@@ -1,0 +1,56 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "WakeWord Installer konfigurieren",
+                "description": "Richten Sie die WakeWord Installer-Integration ein",
+                "data": {
+                    "repository_url": "Repository-URL",
+                    "folder_path": "Ordnerpfad (optional)",
+                    "scan_interval": "Scan-Intervall (Sekunden)"
+                }
+            }
+        },
+        "error": {
+            "invalid_repository": "Die angegebene URL ist kein gültiges Git-Repository",
+            "cannot_connect": "Verbindung zum Repository konnte nicht hergestellt werden",
+            "already_configured": "Das Repository ist bereits konfiguriert"
+        },
+        "abort": {
+            "already_configured": "Das Repository ist bereits konfiguriert"
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "WakeWord Installer Optionen konfigurieren",
+                "description": "Aktualisieren Sie die Einstellungen für den WakeWord Installer",
+                "data": {
+                    "repository_url": "Repository-URL",
+                    "folder_path": "Ordnerpfad (optional)",
+                    "scan_interval": "Scan-Intervall (Sekunden)",
+                    "update_wakewords": "Wakewords jetzt aktualisieren"
+                }
+            }
+        }
+    },
+    "entity": {
+        "sensor": {
+            "wakeword_installer_update_status": {
+                "name": "WakeWord Installer Update-Status",
+                "state": {
+                    "idle": "Leerlauf",
+                    "checking": "Überprüfe auf Updates",
+                    "updating": "Wakewords werden aktualisiert",
+                    "error": "Fehler"
+                }
+            }
+        }
+    },
+    "services": {
+        "update_wakewords": {
+            "name": "WakeWords aktualisieren",
+            "description": "Manuelles Auslösen eines Updates der Wakewords aus dem Repository."
+        }
+    }
+}

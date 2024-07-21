@@ -1,4 +1,5 @@
 import os
+import shutil
 import logging
 import datetime
 import homeassistant.util.dt as dt_util
@@ -46,9 +47,19 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
     await hass.config_entries.async_forward_entry_unload(entry, "sensor")
     hass.data[DOMAIN].pop(entry.entry_id)
+
+    # Delete the openwakeword directory
+    await hass.async_add_executor_job(delete_directory, '/share/openwakeword')
+
     return True
 
 def create_directory(path: str):
     """Create directory if it does not exist."""
     if not os.path.exists(path):
         os.makedirs(path)
+
+def delete_directory(path: str):
+    """Delete directory if it exists."""
+    if os.path.exists(path):
+        shutil.rmtree(path)
+        _LOGGER.info(f"Deleted directory: {path}")
