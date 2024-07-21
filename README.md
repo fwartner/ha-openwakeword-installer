@@ -54,17 +54,20 @@ The **OpenWakeWord Installer** integration for Home Assistant allows you to easi
 
     ```plaintext
     custom_components/
-        └── openwakeword/
+        wakeword_installer/
             ├── __init__.py
-            ├── manifest.json
             ├── config_flow.py
             ├── const.py
-            ├── sensor.py
-            ├── services.yaml
             ├── update.py
-            ├── requirements.txt
+            ├── manifest.json
+            ├── services.yaml
             └── translations/
-                └── en.json
+                ├── en.json
+                ├── de.json
+                ├── it.json
+                ├── es.json
+                └── nl.json
+
     ```
 
 2. **Install Dependencies**
