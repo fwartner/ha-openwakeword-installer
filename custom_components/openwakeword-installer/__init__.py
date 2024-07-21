@@ -4,9 +4,9 @@ import logging
 import datetime
 import homeassistant.util.dt as dt_util
 
-from homeassistant.core import HomeAssistant, ServiceCall
-from homeassistant.helpers.typing import ConfigType
+from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.helpers.typing import ConfigType
 from homeassistant.helpers.event import async_track_time_interval
 
 from .const import DOMAIN, CONF_REPOSITORY_URL, CONF_FOLDER_PATH, CONF_SCAN_INTERVAL
