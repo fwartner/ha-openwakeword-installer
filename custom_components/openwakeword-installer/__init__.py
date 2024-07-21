@@ -1,11 +1,14 @@
 import os
 import logging
+import datetime
+import homeassistant.util.dt as dt_util
 
 from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.helpers.typing import ConfigType
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.helpers.event import async_track_time_interval
 
-from .const import DOMAIN, CONF_REPOSITORY_URL, CONF_FOLDER
+from .const import DOMAIN, CONF_REPOSITORY_URL, CONF_FOLDER_PATH, CONF_SCAN_INTERVAL
 from .update import update_wakewords
 
 _LOGGER = logging.getLogger(__name__)
@@ -16,25 +19,24 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     # Ensure directories are created
     await hass.async_add_executor_job(create_directory, '/share/openwakeword')
 
-    # Register services
-    async def handle_update_wakewords(call: ServiceCall):
-        repository_url = call.data.get(CONF_REPOSITORY_URL)
-        folder = call.data.get(CONF_FOLDER, '')
-        if repository_url:
-            _LOGGER.info(f"Updating wakewords from repository: {repository_url} with folder: {folder}")
-            await hass.async_add_executor_job(update_wakewords, repository_url, folder)
-        else:
-            _LOGGER.error("No repository URL provided for wakeword update.")
-
-    hass.services.async_register(DOMAIN, 'update_wakewords', handle_update_wakewords)
-    _LOGGER.info("Wakeword Installer service registered")
-
     return True
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Wakeword Installer from a config entry."""
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN][entry.entry_id] = entry.data
+
+    # Clone the repository immediately after configuration
+    await hass.async_add_executor_job(update_wakewords, entry.data[CONF_REPOSITORY_URL], entry.data.get(CONF_FOLDER_PATH, ''))
+
+    # Schedule regular updates
+    scan_interval = entry.data.get(CONF_SCAN_INTERVAL, 3600)
+    async def scheduled_update(_):
+        await hass.async_add_executor_job(update_wakewords, entry.data[CONF_REPOSITORY_URL], entry.data.get(CONF_FOLDER_PATH, ''))
+
+    # Schedule the update at the specified interval
+    async_track_time_interval(hass, scheduled_update, datetime.timedelta(seconds=scan_interval))
+
     hass.async_create_task(
         hass.config_entries.async_forward_entry_setup(entry, "sensor")
     )

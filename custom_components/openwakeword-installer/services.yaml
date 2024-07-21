@@ -13,3 +13,11 @@ update_wakewords:
       required: false
       selector:
         text:
+    update_interval:
+      description: "Enter the update interval in hours."
+      example: 24
+      required: false
+      selector:
+        number:
+          min: 1
+          max: 168

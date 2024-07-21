@@ -3,7 +3,7 @@ import os
 import logging
 import shutil
 
-from .const import CONF_REPOSITORY_URL, CONF_FOLDER
+from .const import CONF_REPOSITORY_URL, CONF_FOLDER_PATH
 
 _LOGGER = logging.getLogger(__name__)
 

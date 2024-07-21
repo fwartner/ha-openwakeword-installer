@@ -2,7 +2,7 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
 
-from .const import DOMAIN, CONF_REPOSITORY_URL, CONF_FOLDER
+from .const import DOMAIN, CONF_REPOSITORY_URL, CONF_FOLDER_PATH, CONF_SCAN_INTERVAL
 
 @config_entries.HANDLERS.register(DOMAIN)
 class WakewordInstallerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -11,22 +11,16 @@ class WakewordInstallerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
     CONNECTION_CLASS = config_entries.CONN_CLASS_CLOUD_POLL
 
-    def __init__(self):
-        """Initialize the config flow."""
-        self._repository_url = None
-        self._folder = None
-
     async def async_step_user(self, user_input=None):
         """Handle a flow initialized by the user."""
         errors = {}
         if user_input is not None:
-            self._repository_url = user_input[CONF_REPOSITORY_URL]
-            self._folder = user_input.get(CONF_FOLDER, '')
             return self.async_create_entry(title="Wakeword Installer", data=user_input)
 
         data_schema = vol.Schema({
             vol.Required(CONF_REPOSITORY_URL, description="Enter the URL of the GitHub repository containing the wakewords"): str,
-            vol.Optional(CONF_FOLDER, description="Specify an optional folder within the repository containing the wakewords (e.g., 'en')"): str,
+            vol.Optional(CONF_FOLDER_PATH, description="Specify an optional folder within the repository containing the wakewords (e.g., 'en')"): str,
+            vol.Optional(CONF_SCAN_INTERVAL, default=3600, description="Enter the scan interval in seconds"): int,
         })
 
         return self.async_show_form(
@@ -52,15 +46,19 @@ class WakewordInstallerOptionsFlowHandler(config_entries.OptionsFlow):
                 self.hass.async_create_task(
                     self.hass.services.async_call(
                         DOMAIN, "update_wakewords",
-                        {CONF_REPOSITORY_URL: user_input[CONF_REPOSITORY_URL],
-                         CONF_FOLDER: user_input.get(CONF_FOLDER, '')}
+                        {
+                            CONF_REPOSITORY_URL: user_input[CONF_REPOSITORY_URL],
+                            CONF_FOLDER_PATH: user_input.get(CONF_FOLDER_PATH, ''),
+                            CONF_SCAN_INTERVAL: user_input.get(CONF_SCAN_INTERVAL, 3600)
+                        }
                     )
                 )
             return self.async_create_entry(title="", data=user_input)
 
         data_schema = vol.Schema({
             vol.Optional(CONF_REPOSITORY_URL, default=self.config_entry.options.get(CONF_REPOSITORY_URL, self.config_entry.data.get(CONF_REPOSITORY_URL, '')), description="Enter the URL of the GitHub repository containing the wakewords"): str,
-            vol.Optional(CONF_FOLDER, default=self.config_entry.options.get(CONF_FOLDER, self.config_entry.data.get(CONF_FOLDER, '')), description="Specify an optional folder within the repository containing the wakewords (e.g., 'en')"): str,
+            vol.Optional(CONF_FOLDER_PATH, default=self.config_entry.options.get(CONF_FOLDER_PATH, self.config_entry.data.get(CONF_FOLDER_PATH, '')), description="Specify an optional folder within the repository containing the wakewords (e.g., 'en')"): str,
+            vol.Optional(CONF_SCAN_INTERVAL, default=self.config_entry.options.get(CONF_SCAN_INTERVAL, 3600), description="Enter the scan interval in seconds"): int,
             vol.Optional("update_wakewords", default=False, description="Enable this option to update the wakewords now"): bool,
         })
 
