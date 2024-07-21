@@ -25,8 +25,8 @@ class WakewordInstallerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             return self.async_create_entry(title="Wakeword Installer", data=user_input)
 
         data_schema = vol.Schema({
-            vol.Required(CONF_REPOSITORY_URL): str,
-            vol.Optional(CONF_FOLDER, description="Optional folder within the repository containing the wakewords"): str,
+            vol.Required(CONF_REPOSITORY_URL, description="Enter the URL of the GitHub repository containing the wakewords"): str,
+            vol.Optional(CONF_FOLDER, description="Specify an optional folder within the repository containing the wakewords (e.g., 'en')"): str,
         })
 
         return self.async_show_form(
@@ -59,9 +59,9 @@ class WakewordInstallerOptionsFlowHandler(config_entries.OptionsFlow):
             return self.async_create_entry(title="", data=user_input)
 
         data_schema = vol.Schema({
-            vol.Optional(CONF_REPOSITORY_URL, default=self.config_entry.options.get(CONF_REPOSITORY_URL, self.config_entry.data.get(CONF_REPOSITORY_URL, ''))): str,
-            vol.Optional(CONF_FOLDER, default=self.config_entry.options.get(CONF_FOLDER, self.config_entry.data.get(CONF_FOLDER, '')), description="Optional folder within the repository containing the wakewords"): str,
-            vol.Optional("update_wakewords", default=False): bool,
+            vol.Optional(CONF_REPOSITORY_URL, default=self.config_entry.options.get(CONF_REPOSITORY_URL, self.config_entry.data.get(CONF_REPOSITORY_URL, '')), description="Enter the URL of the GitHub repository containing the wakewords"): str,
+            vol.Optional(CONF_FOLDER, default=self.config_entry.options.get(CONF_FOLDER, self.config_entry.data.get(CONF_FOLDER, '')), description="Specify an optional folder within the repository containing the wakewords (e.g., 'en')"): str,
+            vol.Optional("update_wakewords", default=False, description="Enable this option to update the wakewords now"): bool,
         })
 
         return self.async_show_form(step_id="init", data_schema=data_schema)
