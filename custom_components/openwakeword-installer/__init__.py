@@ -3,7 +3,6 @@ import shutil
 import logging
 import datetime
 import homeassistant.util.dt as dt_util
-import importlib
 
 from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.helpers.typing import ConfigType
