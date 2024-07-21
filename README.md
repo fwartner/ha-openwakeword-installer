@@ -43,7 +43,7 @@ The **OpenWakeWord Installer** integration for Home Assistant allows you to easi
 5. **Configure the Integration**
 
     - Go to **Configuration** -> **Integrations**.
-    - Click on the "+" button and search for "OpenWakeWord".
+    - Click on the "+" button and search for "WakeWord Installer".
     - Follow the setup instructions to configure the repository URL and optional folder path.
 
 ### Manual Installation
