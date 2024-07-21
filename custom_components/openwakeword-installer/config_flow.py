@@ -41,7 +41,6 @@ class WakewordInstallerOptionsFlowHandler(config_entries.OptionsFlow):
     async def async_step_init(self, user_input=None):
         """Manage the options."""
         if user_input is not None:
-            # Trigger the update service if requested
             if user_input.get("update_wakewords"):
                 self.hass.async_create_task(
                     self.hass.services.async_call(

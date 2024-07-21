@@ -3,6 +3,7 @@ import shutil
 import logging
 import datetime
 import homeassistant.util.dt as dt_util
+import importlib
 
 from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.helpers.typing import ConfigType
@@ -16,10 +17,7 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """Set up the Wakeword Installer component."""
-
-    # Ensure directories are created
     await hass.async_add_executor_job(create_directory, '/share/openwakeword')
-
     return True
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -27,15 +25,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN][entry.entry_id] = entry.data
 
-    # Clone the repository immediately after configuration
     await hass.async_add_executor_job(update_wakewords, entry.data[CONF_REPOSITORY_URL], entry.data.get(CONF_FOLDER_PATH, ''))
 
-    # Schedule regular updates
     scan_interval = entry.data.get(CONF_SCAN_INTERVAL, 3600)
     async def scheduled_update(_):
         await hass.async_add_executor_job(update_wakewords, entry.data[CONF_REPOSITORY_URL], entry.data.get(CONF_FOLDER_PATH, ''))
 
-    # Schedule the update at the specified interval
     async_track_time_interval(hass, scheduled_update, datetime.timedelta(seconds=scan_interval))
 
     hass.async_create_task(
@@ -48,7 +43,6 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     await hass.config_entries.async_forward_entry_unload(entry, "sensor")
     hass.data[DOMAIN].pop(entry.entry_id)
 
-    # Delete the openwakeword directory
     await hass.async_add_executor_job(delete_directory, '/share/openwakeword')
 
     return True
