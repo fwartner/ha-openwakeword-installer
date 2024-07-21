@@ -12,10 +12,19 @@ jobs:
       - name: Build Changelog
         uses: mikepenz/release-changelog-builder-action@v4
         with:
+          commitMode: true
           configurationJson: |
             {
-              "template": "#{{CHANGELOG}}\n\n<details>\n<summary>Uncategorized</summary>\n\n#{{UNCATEGORIZED}}\n</details>",
+              "template": "#{{CHANGELOG}}",
               "categories": [
+                {
+                    "title": "## Feature",
+                    "labels": ["feat", "feature"]
+                },
+                {
+                    "title": "## Fix",
+                    "labels": ["fix", "bug"]
+                },
                 {
                     "title": "## 💬 Other",
                     "labels": ["other"]
@@ -24,7 +33,13 @@ jobs:
                     "title": "## 📦 Dependencies",
                     "labels": ["dependencies"]
                 }
-              ]
-            }
+              ],
+              "label_extractor": [
+                {
+                  "pattern": "^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test){1}(\\([\\w\\-\\.]+\\))?(!)?: ([\\w ])+([\\s\\S]*)",
+                  "target": "$1"
+                }
+              ],
+            }]
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
