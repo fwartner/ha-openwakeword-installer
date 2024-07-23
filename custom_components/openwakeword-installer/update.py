@@ -30,8 +30,11 @@ def update_wakewords(repository_url, folder='', base_directory='/share/openwakew
         target_path = os.path.join(target_repo_dir, folder) if folder else target_repo_dir
         process_files(target_path, base_directory)
 
+        return True  # Return True if update is successful
+
     except Exception as e:
         _LOGGER.error(f"Error updating wakewords from repository {repository_url} to {target_repo_dir}: {e}")
+        return False  # Return False if update fails
 
 def process_files(source_directory, target_directory):
     """Process .tflite files from the source directory to the target directory."""
@@ -47,3 +50,4 @@ def process_files(source_directory, target_directory):
                     _LOGGER.info(f"Copied {file} to {target_directory}")
     except Exception as e:
         _LOGGER.error(f"Error processing files from {source_directory} to {target_directory}: {e}")
+        raise  # Re-raise the exception to be caught by the calling function

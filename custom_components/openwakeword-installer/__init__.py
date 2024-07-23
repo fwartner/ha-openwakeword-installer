@@ -18,14 +18,16 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """Set up the Wakeword Installer component."""
     await hass.async_add_executor_job(create_directory, '/share/openwakeword')
 
-    # Register the service
     async def handle_update_wakewords_service(call: ServiceCall):
         repositories = call.data.get(CONF_REPOSITORIES, [])
         for repository in repositories:
             repository_url = repository.get(CONF_REPOSITORY_URL)
             folder_path = repository.get(CONF_FOLDER_PATH, '')
-            await hass.async_add_executor_job(update_wakewords, repository_url, folder_path)
-            _LOGGER.info(f"Wakewords updated from {repository_url} (folder: {folder_path})")
+            success = await hass.async_add_executor_job(update_wakewords, repository_url, folder_path)
+            if success:
+                _LOGGER.info(f"Wakewords updated from {repository_url} (folder: {folder_path})")
+            else:
+                _LOGGER.error(f"Failed to update wakewords from {repository_url} (folder: {folder_path})")
 
     hass.services.async_register(DOMAIN, "update_wakewords", handle_update_wakewords_service)
 
@@ -61,6 +63,11 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         await hass.async_add_executor_job(delete_directory, repository_dir)
 
     return True
+
+async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Reload config entry."""
+    await async_unload_entry(hass, entry)
+    await async_setup_entry(hass, entry)
 
 def create_directory(path: str):
     """Create directory if it does not exist."""
