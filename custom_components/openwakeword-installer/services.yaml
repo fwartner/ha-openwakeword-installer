@@ -1,23 +1,33 @@
 update_wakewords:
-  description: "Update the wakewords from the repository."
+  description: "Update the wakewords from the repositories."
   fields:
-    repository_url:
-      description: "The URL of the repository containing wakewords."
-      example: "https://github.com/fwartner/home-assistant-wakewords-collection"
+    repositories:
+      description: "List of repositories to update wakewords from."
+      example:
+        - repository_url: "https://github.com/fwartner/home-assistant-wakewords-collection"
+          folder_path: "en"
+          scan_interval: 3600
       required: true
       selector:
-        text:
-    folder_path:
-      description: "The folder within the repository containing the wakewords (optional)."
-      example: "en"
-      required: false
-      selector:
-        text:
-    scan_interval:
-      description: "Enter the scan interval in seconds."
-      example: 3600
-      required: false
-      selector:
-        number:
-          min: 1
-          max: 86400
+        object:
+          properties:
+            repository_url:
+              description: "The URL of the repository containing wakewords."
+              example: "https://github.com/fwartner/home-assistant-wakewords-collection"
+              required: true
+              selector:
+                text:
+            folder_path:
+              description: "The folder within the repository containing the wakewords (optional)."
+              example: "en"
+              required: false
+              selector:
+                text:
+            scan_interval:
+              description: "Enter the scan interval in seconds."
+              example: 3600
+              required: false
+              selector:
+                number:
+                  min: 1
+                  max: 86400

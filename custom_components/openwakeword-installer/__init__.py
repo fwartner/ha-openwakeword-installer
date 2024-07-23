@@ -9,7 +9,7 @@ from homeassistant.helpers.typing import ConfigType
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.event import async_track_time_interval
 
-from .const import DOMAIN, CONF_REPOSITORY_URL, CONF_FOLDER_PATH, CONF_SCAN_INTERVAL
+from .const import DOMAIN, CONF_REPOSITORIES, CONF_REPOSITORY_URL, CONF_FOLDER_PATH, CONF_SCAN_INTERVAL
 from .update import update_wakewords
 
 _LOGGER = logging.getLogger(__name__)
@@ -20,11 +20,12 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
 
     # Register the service
     async def handle_update_wakewords_service(call: ServiceCall):
-        repository_url = call.data.get(CONF_REPOSITORY_URL)
-        folder_path = call.data.get(CONF_FOLDER_PATH, '')
-        scan_interval = call.data.get(CONF_SCAN_INTERVAL, 3600)
-        await hass.async_add_executor_job(update_wakewords, repository_url, folder_path)
-        _LOGGER.info(f"Wakewords updated from {repository_url} (folder: {folder_path})")
+        repositories = call.data.get(CONF_REPOSITORIES, [])
+        for repository in repositories:
+            repository_url = repository.get(CONF_REPOSITORY_URL)
+            folder_path = repository.get(CONF_FOLDER_PATH, '')
+            await hass.async_add_executor_job(update_wakewords, repository_url, folder_path)
+            _LOGGER.info(f"Wakewords updated from {repository_url} (folder: {folder_path})")
 
     hass.services.async_register(DOMAIN, "update_wakewords", handle_update_wakewords_service)
 
@@ -35,13 +36,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN][entry.entry_id] = entry.data
 
-    await hass.async_add_executor_job(update_wakewords, entry.data[CONF_REPOSITORY_URL], entry.data.get(CONF_FOLDER_PATH, ''))
+    for repository in entry.data.get(CONF_REPOSITORIES, []):
+        await hass.async_add_executor_job(update_wakewords, repository[CONF_REPOSITORY_URL], repository.get(CONF_FOLDER_PATH, ''))
 
-    scan_interval = entry.data.get(CONF_SCAN_INTERVAL, 3600)
-    async def scheduled_update(_):
-        await hass.async_add_executor_job(update_wakewords, entry.data[CONF_REPOSITORY_URL], entry.data.get(CONF_FOLDER_PATH, ''))
+        scan_interval = repository.get(CONF_SCAN_INTERVAL, 3600)
+        async def scheduled_update(_):
+            await hass.async_add_executor_job(update_wakewords, repository[CONF_REPOSITORY_URL], repository.get(CONF_FOLDER_PATH, ''))
 
-    async_track_time_interval(hass, scheduled_update, datetime.timedelta(seconds=scan_interval))
+        async_track_time_interval(hass, scheduled_update, datetime.timedelta(seconds=scan_interval))
 
     hass.async_create_task(
         hass.config_entries.async_forward_entry_setup(entry, "sensor")
@@ -53,7 +55,10 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     await hass.config_entries.async_forward_entry_unload(entry, "sensor")
     hass.data[DOMAIN].pop(entry.entry_id)
 
-    await hass.async_add_executor_job(delete_directory, '/share/openwakeword')
+    for repository in entry.data.get(CONF_REPOSITORIES, []):
+        repo_name = os.path.basename(repository[CONF_REPOSITORY_URL].rstrip('/'))
+        repository_dir = os.path.join('/share/openwakeword', repo_name)
+        await hass.async_add_executor_job(delete_directory, repository_dir)
 
     return True
 
