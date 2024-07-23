@@ -28,7 +28,7 @@ def update_wakewords(repository_url, folder='', base_directory='/share/openwakew
 
         # Handle folder specific logic
         target_path = os.path.join(target_repo_dir, folder) if folder else target_repo_dir
-        process_files(target_path, target_repo_dir)
+        process_files(target_path, base_directory)
 
     except Exception as e:
         _LOGGER.error(f"Error updating wakewords from repository {repository_url} to {target_repo_dir}: {e}")
